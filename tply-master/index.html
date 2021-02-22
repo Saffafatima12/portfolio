@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<head>
+    <title>tply demo</title>
+    <link href='https://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Inconsolata:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/styles/default.min.css">
+    <link rel="stylesheet" href="static/zenburn.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.1.0/highlight.min.js"></script>
+    <script src="dist/tply.js"></script>
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+</head>
+<body>
+<div class="container">
+    <h1 class="page-title">tply demo</h1>
+    <div class="github-container">
+        <iframe src="https://ghbtns.com/github-btn.html?user=ichub&repo=tply&type=star&count=true&size=large" frameborder="0" scrolling="0" width="160px" height="30px"></iframe>
+        <iframe src="https://ghbtns.com/github-btn.html?user=ichub&type=follow&count=true&size=large" frameborder="0" scrolling="0" width="220px" height="30px"></iframe>
+    </div>
+    <div class="examples">
+        <div class="example-container" data-title="simple text">
+            <type>
+                Why, hello there! How are you? I'm good!
+            </type>
+        </div>
+        <div class="example-container" data-title="pauses">
+            <type>Once upon a time...</type>
+            <wait>500ms</wait>
+            <br>
+            <type>There was a dramatic pause!</type>
+        </div>
+        <div class="example-container" data-title="delete previously typed characters">
+            <type>
+                <span>this text will be deleted</span>
+            </type>
+            <wait>500ms</wait>
+            <delete data-chars="21" data-ignore-whitespace="true"></delete>
+            <wait>500ms</wait>
+            <type>
+                told you :P
+            </type>
+        </div>
+        <div class="example-container" data-title="repeats">
+            <repeat data-repeat="3">
+                <type>This will repeat three times!</type>
+                <br>
+            </repeat>
+        </div>
+        <div class="example-container" data-title="clears (and infinite repeat)">
+            <repeat data-repeat="infinite">
+                <type>This will repeat forever!</type>
+                <wait>1s</wait>
+                <clearparent></clearparent>
+            </repeat>
+        </div>
+        <div class="example-container" data-title="styling">
+            <type style="font-size:200%;font-style:italic;">
+                No need to skimp out on
+                <span style="color:purple;font-weight:bold;">
+                    flair!
+                </span>
+            </type>
+        </div>
+        <div class="example-container" data-title="customizing with attributes">
+            <type data-type="robot">
+                I am a spooky spooky SPOOKY robot!
+            </type>
+            <div class="configuration">
+                {
+                    "types": [
+                        {
+                            "name": "robot",
+                            "properties": {
+                                "data-char-interval": "0ms",
+                                "data-word-interval": "100ms"
+                            }
+                        }
+                    ]
+                }
+
+            </div>
+        </div>
+        <div class="example-container" data-title="more customization">
+            <type data-type="cool">
+                I am the coolest in the whole entire world.
+            </type>
+            <div class="configuration">
+                {
+                    "types": [
+                        {
+                            "name": "cool",
+                            "properties": {
+                                "data-char-interval": "20ms"
+                            },
+                            "style": "color:blue;"
+                        }
+                    ]
+                }
+
+            </div>
+        </div>
+        <div class="example-container" data-title="more customization">
+            <type>
+                <span>cool</span>
+            </type>
+            <div class="configuration">
+                {
+                    "processing": [
+                        {
+                            "tag": "span",
+                            "pre": function(el) {
+                                el.textContent +=
+                                    ";DROP TABLE users --";
+                            },
+                            "post": function(el) {
+                                el.onclick = function() {
+                                    alert("cool (:");
+                                }
+                            }
+                        }
+                    ]
+                }
+            </div>
+        </div>
+    </div>
+
+    <div id="explanation">
+        <div class="title">How can I run these myself?</div>
+        <div id="explanation-text">
+            To run each of these examples on your own, copy the html and configuration as it is presented above
+            into the designated spaces in the html below.
+        </div>
+        <code class="html">
+            <pre>&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;tply animation&lt;/title&gt;
+    &lt;style&gt;
+        #tply-source {
+            display: none; /* we don&#39;t want our template to be visible */
+        }
+    &lt;/style&gt;
+    &lt;script src=&quot;tply.js&quot;&gt;&lt;/script&gt; &lt;!-- a reference to the tply file --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;tply-source&quot;&gt;
+    &lt;!-- the html you see in each example goes here --&gt;
+&lt;/div&gt;
+&lt;div id=&quot;tply-destination&quot;&gt;
+    &lt;!-- this is where stuff is rendered--&gt;
+&lt;/div&gt;
+&lt;script&gt;
+    tply.animate(
+            document.getElementById(&quot;tply-source&quot;),
+            document.getElementById(&quot;tply-destination&quot;),
+            { /*this is where the configuration you see would go */ });
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></code>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            hljs.highlightBlock(document.querySelector("#explanation code"));
+
+            var innerText = function(element) {
+                return element.innerText || element.textContent;
+            };
+
+            var setInnerText = function(element, text) {
+                if (typeof element.innerText !== "undefined") {
+                    element.innerText = text;
+                } else {
+                    element.textContent = text;
+                }
+            };
+
+            var unindentCode = function (text) {
+                var parts = text.split("\n").filter(function (item) {
+                    return item.length > 0;
+                });
+
+                var result = "";
+
+                if (parts.length > 0) {
+                    var count = 0;
+                    while (parts[0][count] == " " && count < parts[0].length) {
+                        count++;
+                    }
+
+                    for (var i = 0; i < parts.length; i++) {
+                        var part = parts[i];
+                        var partText = "";
+
+                        for (var j = count; j < parts[i].length; j++) {
+                            partText += part[j];
+                        }
+
+                        result += partText;
+
+                        if (i < parts.length - 2) {
+                            result += "\n";
+                        }
+                    }
+                }
+
+                return result;
+            };
+
+            var createCodeElement = function (codeText, language) {
+                var code = document.createElement("code");
+                var pre = document.createElement("pre");
+
+                setInnerText(pre, unindentCode(codeText))
+
+                code.appendChild(pre);
+                code.classList.add(language);
+
+                return code;
+            };
+
+            var createExample = function (exampleContainer) {
+                var configurationElement = exampleContainer.querySelector(".configuration");
+                var configObject = {};
+                var hasConfig = false;
+
+                if (configurationElement !== null && typeof configurationElement !== "undefined") {
+                    configObject = eval("configObject = " + innerText(configurationElement));
+                    exampleContainer.removeChild(configurationElement);
+                    hasConfig = true;
+                }
+
+                var example = document.createElement("div");
+                example.classList.add("example");
+
+                var template = document.createElement("div");
+                template.classList.add("tply-template");
+                template.innerHTML = exampleContainer.innerHTML;
+                exampleContainer.innerHTML = "";
+
+                var title = document.createElement("div");
+                title.classList.add("title");
+                setInnerText(title, exampleContainer.getAttribute("data-title"));
+
+                var redo = document.createElement("div");
+                redo.classList.add("redo");
+                setInnerText(redo, "redo");
+
+                title.appendChild(redo);
+
+                exampleContainer.appendChild(title);
+
+                example.appendChild(template);
+                exampleContainer.appendChild(example);
+
+                var destination = document.createElement("div");
+                destination.classList.add("tply-destination");
+                template.parentNode.appendChild(destination);
+
+                var code = createCodeElement(template.innerHTML, "html");
+                exampleContainer.appendChild(code);
+                hljs.highlightBlock(code);
+
+                if (hasConfig) {
+                    var separator = document.createElement("div");
+                    separator.classList.add("separator");
+                    setInnerText(separator, "With the following configuration:");
+                    exampleContainer.appendChild(separator);
+
+                    var config = createCodeElement(innerText(configurationElement), "javascript");
+                    exampleContainer.appendChild(config);
+                    hljs.highlightBlock(config);
+                }
+
+                var status = tply.animate(template, destination, configObject);
+
+                redo.addEventListener("click", function () {
+                    var restart = function () {
+                        destination.innerHTML = "";
+                        status = tply.animate(template, destination, configObject);
+                    };
+
+                    if (status.isFinished) {
+                        restart();
+                    } else {
+                        status.cancel(restart);
+                    }
+                });
+            };
+
+            var examples = document.querySelectorAll(".examples .example-container");
+
+            for (var i = 0; i < examples.length; i++) {
+                var exampleContainer = examples[i];
+
+                createExample(exampleContainer)
+            }
+        })();
+    </script>
+</div>
+</body>
+</html>
